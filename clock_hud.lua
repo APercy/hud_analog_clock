@@ -1,7 +1,7 @@
-out_here={}
-out_here.hud_list = {}
+clock_hud={}
+clock_hud.hud_list = {}
 
-function out_here.animate_gauge(player, ids, prefix, x, y, angle, minor)
+function clock_hud.animate_gauge(player, ids, prefix, x, y, angle, minor)
     local minor = minor or 0
     local angle_in_rad = math.rad(angle + 180)
     local dim = 5
@@ -32,7 +32,7 @@ function out_here.animate_gauge(player, ids, prefix, x, y, angle, minor)
     end
 end
 
-function out_here.update_hud(player)
+function clock_hud.update_hud(player)
     local player_name = player:get_player_name()
 
     local screen_pos_y = 0
@@ -43,7 +43,7 @@ function out_here.update_hud(player)
     local minute_gauge_x = screen_pos_x - 116
     local minute_gauge_y = screen_pos_y + 116
 
-    local ids = out_here.hud_list[player_name]
+    local ids = clock_hud.hud_list[player_name]
     if ids then
 	    local time = minetest:get_timeofday() * 24
         local hour, minutes = math.modf( time )
@@ -51,8 +51,8 @@ function out_here.update_hud(player)
         minutes = (minutes * 60) / 100
         local minute_angle = (minutes*-360)/60
         local hour_angle = (hour*-360)/12 + ((minute_angle*30)/360)
-        out_here.animate_gauge(player, ids, "hour_pt_", hour_gauge_x, hour_gauge_y, hour_angle, 1)
-        out_here.animate_gauge(player, ids, "minute_pt_", minute_gauge_x, minute_gauge_y, minute_angle)
+        clock_hud.animate_gauge(player, ids, "hour_pt_", hour_gauge_x, hour_gauge_y, hour_angle, 1)
+        clock_hud.animate_gauge(player, ids, "minute_pt_", minute_gauge_x, minute_gauge_y, minute_angle)
     else
         ids = {}
         local pointer_texture = "hud_analog_clock_ind_box.png"
@@ -180,19 +180,19 @@ function out_here.update_hud(player)
             alignment = { x = -2.25, y = 2.25 },
         })
 
-        out_here.hud_list[player_name] = ids
+        clock_hud.hud_list[player_name] = ids
     end
     core.after(1, function()
-        out_here.update_hud(player)
+        clock_hud.update_hud(player)
 	end)
 end
 
 
-function out_here.remove_hud(player)
+function clock_hud.remove_hud(player)
     if player then
         local player_name = player:get_player_name()
         --minetest.chat_send_all(player_name)
-        local ids = out_here.hud_list[player_name]
+        local ids = clock_hud.hud_list[player_name]
         if ids then
             player:hud_remove(ids["title"])
             player:hud_remove(ids["bg"])
@@ -211,15 +211,15 @@ function out_here.remove_hud(player)
             player:hud_remove(ids["minute_pt_2"])
             player:hud_remove(ids["minute_pt_1"])
         end
-        out_here.hud_list[player_name] = nil
+        clock_hud.hud_list[player_name] = nil
     end
 
 end
 
-minetest.register_on_joinplayer(out_here.update_hud)
+minetest.register_on_joinplayer(clock_hud.update_hud)
 
 minetest.register_on_leaveplayer(function(player)
-    out_here.remove_hud(player)
+    clock_hud.remove_hud(player)
 end)
 
 
